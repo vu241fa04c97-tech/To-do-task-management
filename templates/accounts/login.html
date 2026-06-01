@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="auth-box">
+
+    <h2>Log in to your account</h2>
+
+    {% for message in messages %}
+        <div class="alert alert-info">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <form method="POST" id="emailLoginForm">
+
+        {% csrf_token %}
+
+        <label>Username or Email Address *</label>
+
+        <input type="text"
+               name="login_input"
+               id="loginInput"
+               class="form-control"
+               placeholder="Enter username or email"
+               required>
+
+        <label>Password *</label>
+
+        <input type="password"
+               name="password"
+               id="passwordInput"
+               class="form-control"
+               placeholder="Enter password"
+               required>
+
+        <div class="forgot-password">
+
+            <a href="{% url 'forgot_password' %}">
+                Forgot Password?
+            </a>
+
+        </div>
+
+        <button type="submit"
+                class="auth-btn"
+                id="emailLoginBtn"
+                disabled>
+
+            Login
+
+        </button>
+
+    </form>
+
+    <p class="text-center mt-4">
+        Don’t have an account?
+    </p>
+
+    <div class="text-center">
+
+        <a href="/register/" class="signup-btn">
+            Sign up for free
+        </a>
+
+    </div>
+
+</div>
+
+<style>
+
+    .auth-box {
+
+        max-width: 540px;
+
+        margin: auto;
+
+        background: white;
+
+        color: #111827;
+
+        padding: 42px;
+
+        border-radius: 22px;
+
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+
+    .auth-box h2 {
+
+        color: #111827;
+
+        text-shadow: none;
+
+        margin-bottom: 30px;
+    }
+
+    .auth-box label {
+
+        margin-top: 18px;
+
+        margin-bottom: 8px;
+
+        font-weight: 600;
+    }
+
+    .auth-box input {
+
+        width: 100%;
+
+        background: white !important;
+
+        color: #111827 !important;
+
+        border: 1px solid #ddd !important;
+
+        padding: 14px !important;
+
+        border-radius: 10px !important;
+
+        margin-bottom: 10px;
+    }
+
+    .forgot-password {
+
+        text-align: right;
+
+        margin-top: 5px;
+
+        margin-bottom: 20px;
+    }
+
+    .forgot-password a {
+
+        text-decoration: none;
+
+        color: #2563eb;
+
+        font-size: 14px;
+
+        font-weight: 600;
+    }
+
+    .forgot-password a:hover {
+
+        color: #1d4ed8;
+    }
+
+    .auth-btn {
+
+        width: 100%;
+
+        margin-top: 10px;
+
+        background: #cbd5e1;
+
+        color: white;
+
+        border: none;
+
+        padding: 14px;
+
+        border-radius: 10px;
+
+        font-weight: 700;
+
+        cursor: not-allowed;
+
+        transition: 0.3s;
+    }
+
+    .auth-btn.active {
+
+        background: linear-gradient(
+            135deg,
+            #7dd3c7,
+            #60a5fa
+        );
+
+        cursor: pointer;
+
+        box-shadow: 0 10px 25px rgba(96,165,250,0.35);
+    }
+
+    .signup-btn {
+
+        display: inline-block;
+
+        border: 1px solid #ddd;
+
+        padding: 12px 35px;
+
+        border-radius: 10px;
+
+        color: #f97316;
+
+        text-decoration: none;
+
+        font-weight: 600;
+    }
+
+    .signup-btn:hover {
+
+        color: #ea580c;
+    }
+
+</style>
+
+<script>
+
+    const loginInput =
+        document.getElementById("loginInput");
+
+    const passwordInput =
+        document.getElementById("passwordInput");
+
+    const loginBtn =
+        document.getElementById("emailLoginBtn");
+
+    function checkLoginFields() {
+
+        if (
+            loginInput.value.trim() !== "" &&
+            passwordInput.value.trim() !== ""
+        ) {
+
+            loginBtn.disabled = false;
+
+            loginBtn.classList.add("active");
+
+        } else {
+
+            loginBtn.disabled = true;
+
+            loginBtn.classList.remove("active");
+        }
+    }
+
+    loginInput.addEventListener(
+        "input",
+        checkLoginFields
+    );
+
+    passwordInput.addEventListener(
+        "input",
+        checkLoginFields
+    );
+
+</script>
+
+{% endblock %}

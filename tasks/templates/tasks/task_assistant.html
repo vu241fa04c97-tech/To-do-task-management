@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="assistant-box">
+
+    <h2>TaskSphere Assistant</h2>
+
+    <p class="subtitle">
+        Explain your work and get smart task title suggestions.
+    </p>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <label>Describe your work</label>
+
+        <textarea name="work_description"
+                  rows="5"
+                  placeholder="Example: I have to complete DBMS homework about normalization..."
+                  required>{{ user_description }}</textarea>
+
+        <button type="submit" class="assistant-btn">
+            Generate Task Names
+        </button>
+
+    </form>
+
+    {% if suggestions %}
+
+        <div class="suggestion-box">
+
+            <h4>Select a Task Name</h4>
+
+            {% for suggestion in suggestions %}
+
+                <a class="suggestion-card"
+                   href="/assistant-to-add/?title={{ suggestion|urlencode }}&description={{ user_description|urlencode }}">
+                    {{ suggestion }}
+                </a>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<style>
+
+.assistant-box {
+    background: white;
+    color: #111827;
+    padding: 35px;
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(148,163,184,0.25);
+}
+
+.assistant-box h2 {
+    color: #1e293b;
+    font-weight: 800;
+    text-shadow: none;
+}
+
+.subtitle {
+    color: #64748b;
+    margin-bottom: 25px;
+}
+
+.assistant-box label {
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.assistant-box textarea {
+    width: 100%;
+    background: #ffffff !important;
+    color: #111827 !important;
+    border: 1px solid #dbeafe !important;
+    border-radius: 18px !important;
+    padding: 15px !important;
+}
+
+.assistant-btn {
+    margin-top: 20px;
+    width: 100%;
+    border: none;
+    padding: 14px;
+    border-radius: 16px;
+    font-weight: 800;
+    color: white;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+}
+
+.suggestion-box {
+    margin-top: 30px;
+}
+
+.suggestion-box h4 {
+    color: #1e293b;
+    text-shadow: none;
+    margin-bottom: 15px;
+}
+
+.suggestion-card {
+    display: block;
+    background: #f8fafc;
+    color: #1e293b;
+    padding: 16px 20px;
+    border-radius: 18px;
+    margin-bottom: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    border: 1px solid #e2e8f0;
+    transition: 0.3s;
+}
+
+.suggestion-card:hover {
+    background: #dbeafe;
+    transform: translateY(-3px);
+}
+
+</style>
+
+{% endblock %}

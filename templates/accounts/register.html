@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="auth-box">
+
+    <h2>Create your account</h2>
+
+    <form method="POST" id="registerForm">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="auth-btn" id="registerBtn" disabled>
+            Register
+        </button>
+
+    </form>
+
+    <p class="text-center mt-4">
+        Already have an account?
+    </p>
+
+    <div class="text-center">
+        <a href="/login/" class="signup-btn">
+            Login
+        </a>
+    </div>
+
+</div>
+
+<style>
+    .auth-box {
+        max-width: 520px;
+        margin: auto;
+        background: white;
+        color: #111827;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+
+    .auth-box h2 {
+        color: #111827;
+        text-shadow: none;
+        margin-bottom: 30px;
+    }
+
+    .auth-box label {
+        font-weight: 600;
+        margin-top: 12px;
+    }
+
+    .auth-box input {
+        width: 100%;
+        background: white !important;
+        color: #111827 !important;
+        border: 1px solid #ddd !important;
+        padding: 14px !important;
+        border-radius: 10px !important;
+        margin-bottom: 12px;
+    }
+
+    .errorlist {
+        color: #dc2626;
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+        padding: 12px 18px;
+        margin-bottom: 15px;
+        list-style-position: inside;
+    }
+
+    .auth-btn {
+        width: 100%;
+        margin-top: 20px;
+        border: none;
+        padding: 14px;
+        border-radius: 10px;
+        font-weight: 700;
+        background: #cbd5e1;
+        color: white;
+        cursor: not-allowed;
+        transition: 0.3s;
+    }
+
+    .auth-btn.active {
+        background: linear-gradient(135deg, #7dd3c7, #60a5fa);
+        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(96,165,250,0.35);
+    }
+
+    .signup-btn {
+        display: inline-block;
+        border: 1px solid #ddd;
+        padding: 12px 35px;
+        border-radius: 10px;
+        color: #f97316;
+        text-decoration: none;
+        font-weight: 600;
+    }
+</style>
+
+<script>
+    const registerForm = document.getElementById("registerForm");
+    const registerBtn = document.getElementById("registerBtn");
+    const registerInputs = registerForm.querySelectorAll("input");
+
+    function checkRegisterFields() {
+        let allFilled = true;
+
+        registerInputs.forEach(input => {
+            if (input.value.trim() === "") {
+                allFilled = false;
+            }
+        });
+
+        if (allFilled) {
+            registerBtn.disabled = false;
+            registerBtn.classList.add("active");
+        } else {
+            registerBtn.disabled = true;
+            registerBtn.classList.remove("active");
+        }
+    }
+
+    registerInputs.forEach(input => {
+        input.addEventListener("input", checkRegisterFields);
+    });
+
+    checkRegisterFields();
+</script>
+
+{% endblock %}

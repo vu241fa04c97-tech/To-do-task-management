@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskSphere</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #1f2937;
+            background: linear-gradient(135deg, #f8fbff, #eef6ff, #fff7fb);
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            width: 480px;
+            height: 480px;
+            background: rgba(96,165,250,0.22);
+            border-radius: 50%;
+            filter: blur(120px);
+            top: -120px;
+            left: -120px;
+            animation: moveOne 10s infinite alternate;
+            z-index: -1;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            width: 460px;
+            height: 460px;
+            background: rgba(167,139,250,0.22);
+            border-radius: 50%;
+            filter: blur(120px);
+            bottom: -120px;
+            right: -120px;
+            animation: moveTwo 12s infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes moveOne {
+            from { transform: translate(0,0); }
+            to { transform: translate(120px,80px); }
+        }
+
+        @keyframes moveTwo {
+            from { transform: translate(0,0); }
+            to { transform: translate(-120px,-80px); }
+        }
+
+        .navbar {
+            background: rgba(255,255,255,0.78) !important;
+            backdrop-filter: blur(22px);
+            border-bottom: 1px solid rgba(226,232,240,0.85);
+            padding: 15px 32px;
+            box-shadow: 0 12px 32px rgba(148,163,184,0.18);
+        }
+
+        .navbar-brand {
+            text-decoration: none;
+        }
+
+        .brand-wrapper {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .brand-name {
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed, #06b6d4);
+            background-size: 220%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            animation: gradientMove 5s linear infinite;
+        }
+
+        .brand-tagline {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 600;
+            margin-top: 3px;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes gradientMove {
+            from { background-position: 0%; }
+            to { background-position: 220%; }
+        }
+
+        .container {
+            margin-top: 40px;
+            background: rgba(255,255,255,0.76);
+            border: 1px solid rgba(255,255,255,0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(148,163,184,0.25);
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        input,
+        textarea,
+        select {
+            background: #ffffff !important;
+            border: 1px solid #dbeafe !important;
+            color: #111827 !important;
+            border-radius: 15px !important;
+            padding: 12px !important;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #94a3b8;
+        }
+
+        select,
+        option {
+            background-color: #ffffff !important;
+            color: #111827 !important;
+        }
+
+        .btn {
+            border-radius: 30px;
+            font-weight: 600;
+            padding: 8px 18px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.06);
+        }
+
+        .profile-circle {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+            font-size: 20px;
+            text-decoration: none;
+            box-shadow: 0 10px 24px rgba(96,165,250,0.42);
+            transition: 0.3s;
+        }
+
+        .profile-circle:hover {
+            color: white;
+            transform: scale(1.08);
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 24px;
+            text-align: center;
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(18px);
+            border-top: 1px solid rgba(226,232,240,0.8);
+            box-shadow: 0 -10px 30px rgba(148,163,184,0.12);
+        }
+
+        .footer-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .footer-subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .flatpickr-calendar {
+            background: #ffffff !important;
+            color: #111827 !important;
+            border-radius: 20px !important;
+            overflow: visible !important;
+            width: 390px !important;
+            padding: 12px !important;
+        }
+
+        .flatpickr-current-month {
+            left: 45px !important;
+            width: 300px !important;
+            font-size: 20px !important;
+            font-weight: 700 !important;
+        }
+
+        .flatpickr-monthDropdown-months {
+            width: 140px !important;
+            font-size: 20px !important;
+            font-weight: 700 !important;
+            color: #111827 !important;
+            background: #ffffff !important;
+        }
+
+        .flatpickr-current-month input.cur-year {
+            width: 110px !important;
+            min-width: 110px !important;
+            font-size: 20px !important;
+            font-weight: 700 !important;
+            color: #111827 !important;
+        }
+
+        .numInputWrapper {
+            width: 110px !important;
+        }
+
+        .numInputWrapper input {
+            color: #111827 !important;
+            background: #ffffff !important;
+            font-weight: 700 !important;
+            width: 110px !important;
+            font-size: 20px !important;
+        }
+
+        .flatpickr-day.pending-date {
+            background: #f59e0b !important;
+            color: #111827 !important;
+            border-radius: 50% !important;
+        }
+
+        .flatpickr-day.completed-date {
+            background: #22c55e !important;
+            color: white !important;
+            border-radius: 50% !important;
+        }
+
+        .date-wrapper {
+            position: relative;
+        }
+
+        .date-wrapper::after {
+            content: "📅";
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            font-size: 20px;
+            pointer-events: none;
+        }
+
+        .chat-float-btn {
+            position: fixed;
+            right: 26px;
+            bottom: 28px;
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            font-size: 28px;
+            font-weight: 800;
+            box-shadow: 0 18px 40px rgba(37,99,235,0.38);
+            z-index: 9999;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .chat-float-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .chat-widget {
+            position: fixed;
+            right: 26px;
+            bottom: 110px;
+            width: 385px;
+            height: 540px;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 25px 70px rgba(15,23,42,0.28);
+            z-index: 9998;
+            display: none;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chat-widget.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .chat-status {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .chat-close {
+            background: rgba(255,255,255,0.18);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .chat-body {
+            flex: 1;
+            padding: 18px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+
+        .bot-msg,
+        .user-msg {
+            padding: 13px 15px;
+            border-radius: 18px;
+            margin-bottom: 13px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .bot-msg {
+            background: #ffffff;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .user-msg {
+            background: #dbeafe;
+            color: #1e3a8a;
+            margin-left: 30px;
+        }
+
+        .suggestion-link {
+            display: block;
+            background: #ffffff;
+            border: 1px solid #dbeafe;
+            color: #1e293b;
+            text-decoration: none;
+            padding: 13px 15px;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .suggestion-link:hover {
+            background: #dbeafe;
+            color: #1e40af;
+            transform: translateY(-2px);
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .chat-input-area textarea {
+            width: 100%;
+            height: 82px;
+            resize: none;
+            margin-bottom: 10px;
+        }
+
+        .chat-send-btn {
+            width: 100%;
+            border: none;
+            padding: 12px;
+            border-radius: 16px;
+            color: white;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+        }
+
+        @media(max-width: 768px) {
+            .navbar {
+                padding: 14px 18px;
+            }
+
+            .brand-name {
+                font-size: 24px;
+            }
+
+            .brand-tagline {
+                font-size: 10px;
+            }
+
+            .container {
+                padding: 20px;
+                margin-top: 25px;
+            }
+
+            .chat-widget {
+                width: calc(100% - 30px);
+                right: 15px;
+                bottom: 100px;
+            }
+
+            .chat-float-btn {
+                right: 18px;
+                bottom: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+
+        <a class="navbar-brand" href="/">
+            <div class="brand-wrapper">
+                <span class="brand-name">TaskSphere</span>
+                <span class="brand-tagline">Smart Productivity & Task Management</span>
+            </div>
+        </a>
+
+        <div>
+            {% if user.is_authenticated %}
+
+                <a href="/profile/" class="profile-circle">
+                    {{ user.username|first|upper }}
+                </a>
+
+            {% else %}
+
+                <a href="/login/" class="btn btn-primary btn-sm">
+                    Login
+                </a>
+
+            {% endif %}
+        </div>
+
+    </div>
+</nav>
+
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<footer>
+    <p class="footer-title">TaskSphere</p>
+    <p class="footer-subtitle">
+        Smart Productivity & Task Management System
+    </p>
+</footer>
+
+{% if user.is_authenticated %}
+
+<button class="chat-float-btn" onclick="toggleChat()">
+    AI
+</button>
+
+<div class="chat-widget" id="chatWidget">
+
+    <div class="chat-header">
+        <div>
+            <div class="chat-title">TaskSphere Assistant</div>
+            <div class="chat-status">Online · Task suggestion assistant</div>
+        </div>
+
+        <button class="chat-close" onclick="toggleChat()">×</button>
+    </div>
+
+    <div class="chat-body" id="chatBody">
+
+        <div class="bot-msg">
+            Hi {{ user.username }}, explain your work. I will suggest three task titles for you.
+        </div>
+
+    </div>
+
+    <div class="chat-input-area">
+
+        <textarea id="chatInput"
+                  placeholder="Example: I have to complete DBMS homework about normalization..."></textarea>
+
+        <button class="chat-send-btn" onclick="generateTaskSuggestions()">
+            Generate Suggestions
+        </button>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    fetch('/task-dates/')
+        .then(response => response.json())
+        .then(taskDates => {
+
+            flatpickr(".datepicker", {
+                dateFormat: "Y-m-d",
+                allowInput: true,
+
+                onReady: function(selectedDates, dateStr, instance) {
+                    instance.input.placeholder = "YYYY-MM-DD";
+                    instance.input.parentElement.classList.add("date-wrapper");
+                },
+
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    let date = dayElem.dateObj;
+                    let year = date.getFullYear();
+                    let month = String(date.getMonth() + 1).padStart(2, '0');
+                    let day = String(date.getDate()).padStart(2, '0');
+
+                    let formattedDate = `${year}-${month}-${day}`;
+
+                    if (taskDates[formattedDate]) {
+                        if (taskDates[formattedDate].pending > 0) {
+                            dayElem.classList.add("pending-date");
+                        }
+                        else if (taskDates[formattedDate].completed > 0) {
+                            dayElem.classList.add("completed-date");
+                        }
+                    }
+                },
+
+                onChange: function(selectedDates, dateStr) {
+                    if (taskDates[dateStr]) {
+                        if (taskDates[dateStr].pending > 0) {
+                            alert("Pending task already exists on this date!");
+                        }
+                        else if (taskDates[dateStr].completed > 0) {
+                            alert("Completed task already exists on this date!");
+                        }
+                    }
+                }
+            });
+        });
+
+    function toggleChat() {
+        const chatWidget = document.getElementById("chatWidget");
+        chatWidget.classList.toggle("active");
+    }
+
+    function generateTaskSuggestions() {
+
+        const input = document.getElementById("chatInput");
+        const chatBody = document.getElementById("chatBody");
+
+        const description = input.value.trim();
+
+        if (description === "") {
+            alert("Please describe your work first.");
+            return;
+        }
+
+        const userMsg = document.createElement("div");
+        userMsg.className = "user-msg";
+        userMsg.innerText = description;
+        chatBody.appendChild(userMsg);
+
+        const words = description.split(/\s+/);
+        const shortText = words.slice(0, 8).join(" ");
+
+        const suggestions = [
+            "Complete " + shortText,
+            "Prepare notes for " + shortText,
+            "Finish assignment on " + shortText
+        ];
+
+        const botMsg = document.createElement("div");
+        botMsg.className = "bot-msg";
+        botMsg.innerText = "Choose one task name:";
+        chatBody.appendChild(botMsg);
+
+        suggestions.forEach(function(title) {
+
+            const link = document.createElement("a");
+
+            link.className = "suggestion-link";
+
+            link.innerText = title;
+
+            link.href = "/assistant-to-add/?title=" +
+                encodeURIComponent(title) +
+                "&description=" +
+                encodeURIComponent(description);
+
+            chatBody.appendChild(link);
+
+        });
+
+        input.value = "";
+
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,516 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>Welcome, {{ request.user.username }}</h2>
+        <p>Organize your tasks beautifully and stay productive.</p>
+    </div>
+
+    <div class="header-actions">
+        <a href="/add/" class="add-btn">+ Add Task</a>
+    </div>
+</div>
+
+<div class="stats-grid">
+
+    <a href="/" class="stat-card total">
+        <span>Total Tasks</span>
+        <h3>{{ tasks.count }}</h3>
+    </a>
+
+    <a href="/?status=completed" class="stat-card completed">
+        <span>Completed</span>
+        <h3>{{ completed_count }}</h3>
+    </a>
+
+    <a href="/?status=pending" class="stat-card pending">
+        <span>Pending</span>
+        <h3>{{ pending_count }}</h3>
+    </a>
+
+</div>
+
+<div class="mood-box">
+    <h4>Task Planning Mode</h4>
+
+    <p class="mood-subtitle">
+        Choose your current work mode to optimize task recommendations.
+    </p>
+
+    <div class="mood-buttons">
+        <a href="/?mood=energetic" class="mood-btn {% if selected_mood == 'energetic' %}active{% endif %}">Energetic</a>
+        <a href="/?mood=normal" class="mood-btn {% if selected_mood == 'normal' %}active{% endif %}">Normal</a>
+        <a href="/?mood=tired" class="mood-btn {% if selected_mood == 'tired' %}active{% endif %}">Tired</a>
+        <a href="/?mood=stressed" class="mood-btn {% if selected_mood == 'stressed' %}active{% endif %}">Stressed</a>
+    </div>
+</div>
+
+<form method="GET" class="search-box">
+
+    <label class="search-label">Search</label>
+
+    <input type="text"
+           name="search"
+           placeholder="Search your tasks...">
+
+</form>
+
+<div class="task-board">
+
+    {% for task in tasks %}
+
+    <div class="soft-task-card">
+
+        <div class="card-top">
+
+            <span class="category-pill">{{ task.category }}</span>
+
+            {% if task.priority == 'High' %}
+                <span class="priority high">High</span>
+            {% elif task.priority == 'Medium' %}
+                <span class="priority medium">Medium</span>
+            {% else %}
+                <span class="priority low">Low</span>
+            {% endif %}
+
+        </div>
+
+        <h4>{{ task.title }}</h4>
+
+        <p class="description">
+            {{ task.description }}
+        </p>
+
+        <div class="date-row">
+
+            {% if task.completed %}
+                <span class="date-pill done">{{ task.due_date }}</span>
+            {% elif task.due_date < today %}
+                <span class="date-pill late">{{ task.due_date }} · Overdue</span>
+            {% elif task.due_date == today %}
+                <span class="date-pill today">{{ task.due_date }} · Today</span>
+            {% else %}
+                <span class="date-pill normal">{{ task.due_date }}</span>
+            {% endif %}
+
+        </div>
+
+        <div class="status-row">
+
+            {% if task.completed %}
+                <span class="status completed-status">Completed</span>
+            {% else %}
+                <span class="status pending-status">Pending</span>
+            {% endif %}
+
+        </div>
+
+        <div class="risk-box {{ task.risk_class }}">
+            <strong>{{ task.risk_label }}</strong>
+            <p>{{ task.risk_message }}</p>
+        </div>
+
+        <div class="action-row">
+
+            <a href="/edit/{{ task.id }}/" class="action edit">Edit</a>
+
+            <a href="/delete/{{ task.id }}/" class="action delete">Delete</a>
+
+            {% if not task.completed %}
+                <a href="/complete/{{ task.id }}/" class="action complete">Complete</a>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="empty-box">
+        No tasks found
+    </div>
+
+    {% endfor %}
+
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f8fbff, #eef6ff, #fff7fb) !important;
+        color: #1f2937 !important;
+    }
+
+    .container {
+        background: rgba(255,255,255,0.78) !important;
+        border: 1px solid rgba(255,255,255,0.7) !important;
+        box-shadow: 0 20px 60px rgba(148,163,184,0.25) !important;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 28px;
+        gap: 20px;
+    }
+
+    .page-header h2 {
+        font-size: 34px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+        text-shadow: none;
+    }
+
+    .page-header p {
+        color: #64748b;
+        margin-top: 6px;
+        font-size: 15px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .add-btn {
+        color: white;
+        padding: 13px 24px;
+        border-radius: 18px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: 0.3s;
+        background: linear-gradient(135deg, #a78bfa, #60a5fa);
+        box-shadow: 0 10px 25px rgba(96,165,250,0.35);
+    }
+
+    .add-btn:hover {
+        transform: translateY(-3px);
+        color: white;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+        margin-bottom: 28px;
+    }
+
+    .stat-card {
+        text-decoration: none;
+        padding: 24px;
+        border-radius: 28px;
+        min-height: 135px;
+        transition: 0.3s;
+        border: 1px solid rgba(255,255,255,0.8);
+        box-shadow: 0 15px 35px rgba(148,163,184,0.22);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-6px);
+    }
+
+    .stat-card span {
+        color: #475569;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .stat-card h3 {
+        margin-top: 12px;
+        font-size: 42px;
+        font-weight: 800;
+        color: #1e293b;
+    }
+
+    .stat-card.total {
+        background: linear-gradient(135deg, #dbeafe, #ede9fe);
+    }
+
+    .stat-card.completed {
+        background: linear-gradient(135deg, #dcfce7, #ccfbf1);
+    }
+
+    .stat-card.pending {
+        background: linear-gradient(135deg, #fef3c7, #ffe4e6);
+    }
+
+    .mood-box {
+        background: white;
+        padding: 24px;
+        border-radius: 26px;
+        margin-bottom: 28px;
+        box-shadow: 0 12px 35px rgba(148,163,184,0.22);
+    }
+
+    .mood-box h4 {
+        color: #1e293b;
+        text-shadow: none;
+        margin-bottom: 8px;
+        font-weight: 800;
+    }
+
+    .mood-subtitle {
+        color: #64748b;
+        font-size: 14px;
+        margin-bottom: 16px;
+    }
+
+    .mood-buttons {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .mood-btn {
+        text-decoration: none;
+        padding: 11px 18px;
+        border-radius: 999px;
+        background: #e0f2fe;
+        color: #0369a1;
+        font-weight: 800;
+        transition: 0.3s;
+    }
+
+    .mood-btn:hover,
+    .mood-btn.active {
+        background: linear-gradient(135deg, #bae6fd, #c4b5fd);
+        color: #1e293b;
+        transform: translateY(-3px);
+    }
+
+    .search-box {
+        margin-bottom: 30px;
+    }
+
+    .search-label {
+        display: block;
+        color: #1e293b;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 15px 20px !important;
+        border-radius: 20px !important;
+        border: 1px solid #dbeafe !important;
+        background: white !important;
+        color: #1e293b !important;
+        box-shadow: 0 10px 25px rgba(148,163,184,0.15);
+    }
+
+    .task-board {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+    }
+
+    .soft-task-card {
+        background: rgba(255,255,255,0.92);
+        border-radius: 28px;
+        padding: 22px;
+        border: 1px solid rgba(226,232,240,0.9);
+        box-shadow: 0 16px 40px rgba(148,163,184,0.22);
+        transition: 0.3s;
+        min-height: 350px;
+    }
+
+    .soft-task-card:hover {
+        transform: translateY(-7px);
+        box-shadow: 0 22px 50px rgba(148,163,184,0.35);
+    }
+
+    .card-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .category-pill {
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .priority {
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .priority.high {
+        background: #ffe4e6;
+        color: #be123c;
+    }
+
+    .priority.medium {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .priority.low {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .soft-task-card h4 {
+        font-size: 22px;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .description {
+        color: #64748b;
+        font-size: 14px;
+        min-height: 50px;
+    }
+
+    .date-pill,
+    .status {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-top: 8px;
+    }
+
+    .date-pill.done {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .date-pill.late {
+        background: #ffe4e6;
+        color: #be123c;
+    }
+
+    .date-pill.today {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .date-pill.normal {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .completed-status {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .pending-status {
+        background: #ffe4e6;
+        color: #be123c;
+    }
+
+    .risk-box {
+        margin-top: 15px;
+        padding: 13px;
+        border-radius: 18px;
+        font-size: 13px;
+    }
+
+    .risk-box p {
+        margin: 5px 0 0;
+        font-weight: 600;
+    }
+
+    .risk-high {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .risk-medium {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .risk-low {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .risk-safe {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .action-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+
+    .action {
+        text-decoration: none;
+        padding: 9px 15px;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 13px;
+        transition: 0.3s;
+    }
+
+    .action:hover {
+        transform: translateY(-2px);
+    }
+
+    .action.edit {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .action.delete {
+        background: #ffe4e6;
+        color: #be123c;
+    }
+
+    .action.complete {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .empty-box {
+        background: white;
+        color: #ef4444;
+        padding: 25px;
+        border-radius: 20px;
+        text-align: center;
+        font-weight: 700;
+        box-shadow: 0 10px 30px rgba(148,163,184,0.2);
+    }
+
+    @media(max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .add-btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+{% endblock %}
